@@ -10,8 +10,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 from django import template
-
-register = template.Library()
+register = template.Library
 
 
 class Group(models.Model):
@@ -45,3 +44,4 @@ class GroupMember(models.Model):
 
     class Meta:
         unique_together = ('group', 'user')
+

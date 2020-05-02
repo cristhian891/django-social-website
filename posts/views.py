@@ -6,6 +6,7 @@ from django.views import generic
 from django.http import Http404
 from braces.views import SelectRelatedMixin
 
+from groups.models import Group
 from . import models
 from . import forms
 
@@ -18,6 +19,13 @@ class PostList(SelectRelatedMixin, generic.ListView):
     model = models.Post
     select_related = ('user','group')
 
+    queryset = models.Post.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super(PostList, self).get_context_data(**kwargs)
+        context['user_groups'] = Group.objects.filter(members__in=[self.request.user])
+        context['all_groups'] = Group.objects.all()
+        return context
 
 class UserPosts(generic.ListView):
     model = models.Post
@@ -47,7 +55,7 @@ class PostDetail(SelectRelatedMixin, generic.DetailView):
 
 
 class CreatePost(LoginRequiredMixin, SelectRelatedMixin, generic.CreateView):
-    fields = ('message', 'group')
+    fields = ('title', 'message', 'group')
     model = models.Post
 
     def form_valid(self, form):
